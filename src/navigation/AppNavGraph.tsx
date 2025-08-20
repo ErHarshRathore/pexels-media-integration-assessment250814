@@ -1,6 +1,6 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeFeed from '../views/screens/HomeFeed/HomeFeed';
-import VerticalPagerGallery from '../views/screens/MediaGallery/VerticalPagerGallery';
+import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
+import HomeFeed from '../views/screens/HomeFeed/_layout';
+import VerticalPagerGallery from '../views/screens/MediaGallery/_layout';
 
 // Import your screens (you'll need to create these)
 
@@ -11,6 +11,9 @@ export type RootStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+
+export type HomeFeedNavigationProp = NativeStackNavigationProp<RootStackParamList, 'HomeFeed'>;
 
 const AppNavGraph = () => {
     return (

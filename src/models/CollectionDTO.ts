@@ -8,8 +8,8 @@ export interface CollectionDTO {
   id: string;
 }
 
-interface Media {
-  type: string;
+export interface Media {
+  type: MediaType;
   id: number;
   width: number;
   height: number;
@@ -28,6 +28,11 @@ interface Media {
   user?: User;
   video_files?: VideoFile[];
   video_pictures?: VideoPicture[];
+} 
+
+export enum MediaType {
+  Photo = "Photo",
+  Video = "Video",
 }
 
 interface VideoPicture {

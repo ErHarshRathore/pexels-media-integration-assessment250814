@@ -21,23 +21,5 @@ export class MediaCache {
             return null;
         }
     }
-
-    static async remove(key: string): Promise<void> {
-        try {
-            await AsyncStorage.removeItem(this.PREFIX + key);
-        } catch (error) {
-            console.error('Error removing from cache:', error);
-        }
-    }
-
-    static async clear(): Promise<void> {
-        try {
-            const keys = await AsyncStorage.getAllKeys();
-            const mediaCacheKeys = keys.filter(key => key.startsWith(this.PREFIX));
-            await AsyncStorage.multiRemove(mediaCacheKeys);
-        } catch (error) {
-            console.error('Error clearing cache:', error);
-        }
-    }
 }
 

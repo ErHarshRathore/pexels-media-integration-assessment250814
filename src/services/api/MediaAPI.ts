@@ -1,11 +1,5 @@
 import axios from 'axios';
 import { APIConfig } from './APIConfig';
-import { CollectionDTO } from '../../models/CollectionDTO';
-
-interface PaginationParams {
-    page?: number;
-    per_page?: number;
-}
 
 export const MediaAPI = {
     /**
@@ -14,19 +8,14 @@ export const MediaAPI = {
      * @param params - Optional pagination parameters
      * @returns Promise containing the collection data
      */
-    getCollection: async (
-        collectionId: string,
-        params?: PaginationParams
-    ): Promise<CollectionDTO> => {
+    getAPI: async <T> (url: string): Promise<T> => {
         try {
-            const response = await axios.get<CollectionDTO>(
-                `${APIConfig.baseURL}/collections/${collectionId}`,
-                {
+            console.log('GET API fom URL - ', url);
+            const response = await axios.get<T>(
+                url || `${APIConfig.baseURL}/collections/vog4mjt`,
+                { 
+                    method: 'GET',
                     headers: APIConfig.headers,
-                    params: {
-                        page: params?.page || 1,
-                        per_page: params?.per_page || 15,
-                    },
                 }
             );
             return response.data;

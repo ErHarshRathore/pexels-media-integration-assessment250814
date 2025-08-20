@@ -1,4 +1,5 @@
 import { CollectionDTO } from "../../models/CollectionDTO";
+import { APIConfig } from "../api/APIConfig";
 import { MediaAPI } from "../api/MediaAPI";
 import { MediaCache } from "../cache/MediaCache";
 import { ResponseCategory, ResponseStates } from "./ResponseCategory";
@@ -6,34 +7,31 @@ import { Observable, Subscriber } from 'rxjs';
 
 export function fetchMedia(
     shouldCache: boolean = false,
-    mediaId: string = 'vog4mjt',
-    queryParams: Record<string, any> = {}
+    url: string = `${APIConfig.baseURL}/collections/vog4mjt`,
 ): Observable<ResponseCategory<CollectionDTO>> {
     return new Observable<ResponseCategory<CollectionDTO>>( subscriber => {
-        dataProducer(shouldCache, mediaId, queryParams, subscriber);
+        dataProducer(shouldCache, url, subscriber);
     });
 }
 
 async function dataProducer(
-    shouldCache: boolean = false,
-    mediaId: string = 'vog4mjt',
-    queryParams: Record<string, any> = {},
+    shouldCache: boolean,
+    url: string,
     subscriber: Subscriber<ResponseCategory<CollectionDTO>>,
 ) {
-    const cacheKey = mediaId + (queryParams?.page ? `_page_${queryParams.page}` : '');
     let cachedData: CollectionDTO | null = null;
     if (shouldCache) {
-        cachedData = await MediaCache.get<CollectionDTO>(cacheKey);
+        cachedData = await MediaCache.get<CollectionDTO>(url);
     }
     subscriber.next(ResponseStates.loading(cachedData));
     console.log('MediaAPI.getCollection loading');
 
-    await MediaAPI.getCollection(mediaId, queryParams)
+    await MediaAPI.getAPI<CollectionDTO>(url)
         .then(data => {
             console.log('MediaAPI.getCollection', data);
             const response = ResponseStates.success(data, 200);
             if (shouldCache) {
-                MediaCache.set(cacheKey, data);
+                MediaCache.set(url, data);
             }
             subscriber.next(response);
             subscriber.complete();
