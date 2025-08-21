@@ -25,15 +25,6 @@ const MediaCard = (props: any) => {
         setPlaybackState(0)
      }, [media?.id, props.params.playingIndex])
 
-     useEffect(() => {
-        console.log(
-            "item: ", props.params.item.index,
-            " playbackI: ", props.params.playingIndex,
-            " playbackS: ", playbackState,            
-        )
-     }, [isPlaybackIndex, playbackState])
-
-
     return (
         <Pressable onPress={ () => {
             homeViewModel.uiEvent(

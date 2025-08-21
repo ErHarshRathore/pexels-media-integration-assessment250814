@@ -14,9 +14,7 @@ const VerticalPagerGallery = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
-        if (viewableItems.length > 0) {
-            setCurrentIndex(viewableItems[0].index);
-        }
+        if (viewableItems.length > 0) setCurrentIndex(viewableItems[0].index);
     });
 
     return (
@@ -24,17 +22,15 @@ const VerticalPagerGallery = () => {
             <FlashList
                 data={ mediaCollection }
                 style={styles.pagerView}
-                renderItem={ item => (
-                    <MediaGalleryItem params={{item, currentIndex}} />
-                )}
+                renderItem={ item => <MediaGalleryItem params={{item, currentIndex}} /> }
                 keyExtractor={ (item, index) => index.toString() + item.id.toString() }
-                horizontal={false}
+                horizontal={ false }
                 initialScrollIndex={ navParams.params?.index }
-                pagingEnabled={true} 
+                pagingEnabled={ true } 
                 decelerationRate='fast'
                 showsVerticalScrollIndicator={false}
                 onViewableItemsChanged={onViewableItemsChanged.current}
-                viewabilityConfig={{ viewAreaCoveragePercentThreshold: 100 }}
+                viewabilityConfig={{ viewAreaCoveragePercentThreshold: 70 }}
             />
 
             {/* <Pressable 

@@ -3,11 +3,11 @@ import { Media, MediaType } from '../../models/CollectionDTO';
 import Video from 'react-native-video';
 import { Text } from '@react-navigation/elements';
 
-const windowSize = Dimensions.get('window');
 const MediaGalleryItem = (props: any) => {
+    const windowSize = Dimensions.get('window');
     const media = props.params.item.item as (Media | null);
     const isPlaybackIndex = props.params.currentIndex === props.params.item.index
-    
+
     return (
         <View style={ [styles.root, { height: windowSize.height}] } >
             {
@@ -18,9 +18,11 @@ const MediaGalleryItem = (props: any) => {
                     resizeMode='contain'
                     repeat={false}
                     controls={true}
+                    onError={ (error) => console.log(error) }
                     paused={!isPlaybackIndex}
                 /> : <Image 
                     src={ findHighestResolutionImage(media) } 
+                    alt={ media?.alt }
                     style={[ styles.mediaItem]}
                     resizeMode='contain'
                 />
@@ -40,7 +42,6 @@ function findHighestResolutionVideo(media: Media): string {
             res = element.link || res
         }
     });
-
     return res;
 }
 
