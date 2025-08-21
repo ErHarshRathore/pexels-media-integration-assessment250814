@@ -1,4 +1,4 @@
-import { HomeFeedNavigationProp } from "../../../navigation/AppNavGraph";
+import { HomeFeedNavigationProp } from "../../../navigation/NavigationProps"
 
 export enum HomeFeedUiEventOptions {
     ON_INITIALIZE_FEED = 'ON_INITIALIZE_FEED',
@@ -11,7 +11,8 @@ export type HomeFeedUiEventType =
     { type: HomeFeedUiEventOptions.LOAD_MORE_MEDIA} |
     { 
         type: HomeFeedUiEventOptions.NAVIGATE_TO_GALLERY 
-        navigator: HomeFeedNavigationProp
+        navigator: HomeFeedNavigationProp,
+        params?: any,
     }
 
 export const HomeFeedUiEvent = {
@@ -19,12 +20,16 @@ export const HomeFeedUiEvent = {
         type: HomeFeedUiEventOptions.ON_INITIALIZE_FEED
     }),
 
-    NavigateToGallery: (navigator: HomeFeedNavigationProp): HomeFeedUiEventType => ({
-        type: HomeFeedUiEventOptions.NAVIGATE_TO_GALLERY,
-        navigator,
-    }),
-
     LoadMoreMedia: (): HomeFeedUiEventType => ({
         type: HomeFeedUiEventOptions.LOAD_MORE_MEDIA,
+    }),
+
+    NavigateToGallery: (
+        navigator: HomeFeedNavigationProp, 
+        params?: any,
+    ): HomeFeedUiEventType => ({
+        type: HomeFeedUiEventOptions.NAVIGATE_TO_GALLERY,
+        navigator,
+        params,
     }),
 }

@@ -1,56 +1,78 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../../navigation/AppNavGraph';
-import { Video } from 'react-native-video';
+import { View, StyleSheet } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { HomeFeedViewModel } from '../HomeFeed/HomeFeedViewModel';
+import MediaGalleryItem from '../../components/MediaGalleryItem';
+import { Media } from '../../../models/CollectionDTO';
+import { FlashList } from '@shopify/flash-list';
+import { useState, useRef } from 'react';
 
-type GalleryNavigationProp = NativeStackNavigationProp<RootStackParamList, 'VerticalPageGallery'>;
+export type  MEDIA_GALLERY_SCREEN_NAME = 'VerticalPageGallery';
+export const MEDIA_GALLERY_SCREEN_NAME = 'VerticalPageGallery';
 
 const VerticalPagerGallery = () => {
-    const navigation = useNavigation<GalleryNavigationProp>();
+    const navParams = useRoute().params as any;
+    // const navigator = useNavigation<GalleryNavigationProp>();
+
+    // const mediaCollection = ((route.params as any)?.mediaCollection || []) as Media[]
+    const homeViewModel = navParams.homeViewModel as HomeFeedViewModel
+
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
+        if (viewableItems.length > 0) {
+            setCurrentIndex(viewableItems[0].index);
+        }
+    });
 
     return (
         <View style={styles.container}>
-            <Video 
-                source={{ uri: 'https://videos.pexels.com/video-files/2324274/2324274-sd_640_360_25fps.mp4' }}
-                style={styles.backgroundVideo}
-                resizeMode="cover"
-                repeat={true}
-                paused={false} // Starts playing automatically
+            <FlashList
+                data={ homeViewModel.mediaCollection as Media[] }
+                style={styles.pagerView}
+                renderItem={ item => (
+                    <MediaGalleryItem params={{item, currentIndex}} />
+                )}
+                keyExtractor={ (item, index) => index.toString() + item.id.toString() }
+                horizontal={false}
+                initialScrollIndex={ navParams.params?.index }
+                pagingEnabled={true} 
+                decelerationRate='fast'
+                showsVerticalScrollIndicator={false}
+                onViewableItemsChanged={onViewableItemsChanged.current}
+                viewabilityConfig={{ viewAreaCoveragePercentThreshold: 100 }}
             />
-            <Text style={styles.title}>Gallery Screen</Text>
-            <Pressable 
-                onPress={() => navigation.goBack()}
-                style={styles.backButton}
+
+            {/* <Pressable 
+                onPress={() => navigator.goBack()}
+                style={[styles.backButton, { top: insets.top + 10 }]}
             >
-                <Text style={styles.buttonText}>Go Back</Text>
-            </Pressable>
+                <Text style={styles.backButtonText}>‹</Text>
+            </Pressable>             */}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        flex: 1,
+        backgroundColor: '#000',
     },
     backButton: {
-        padding: 15,
-        backgroundColor: 'silver',
+        position: 'absolute',
+        width: 36,
+        height: 36,
+        left: 12,
         borderRadius: 8,
+        backgroundColor: '#fff8',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
     },
-    buttonText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: 'gold',
+    backButtonText: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#07a',
     },
     backgroundVideo: {
         flex: 1,
@@ -61,6 +83,21 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 0,
     },
+    pagerView: {
+        backgroundColor: '#0ff',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+    },
+    pagerViewItem: {
+        width: '100%', 
+        height: '100%',
+        alignContent: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#0005',
+    }
 });
 
 export default VerticalPagerGallery;

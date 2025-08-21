@@ -6,6 +6,9 @@ import { HomeFeedUiState, HomeFeedUiStateOptions, HomeFeedUiStateType } from './
 import HomeFeedSuccessUi from './Ui/HomeFeedSuccessUi';
 import { Media } from '../../../models/CollectionDTO';
 
+export type  HOME_FEED_SCREEN_NAME = 'HomeFeed';
+export const HOME_FEED_SCREEN_NAME = 'HomeFeed';
+
 const HomeFeed = () => {
     const homeViewModel = useRef(new HomeFeedViewModel());
     const [collectionData, setCollectionData] = useState<Media[]>(homeViewModel.current.mediaCollection)
@@ -70,3 +73,4 @@ const styles = StyleSheet.create({
 });
 
 export default HomeFeed;
+

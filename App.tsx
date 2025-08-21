@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   systemBarOverlay: { 
-    backgroundColor: '#fff8',
     position: 'absolute',
     left: 0,
     right: 0,
@@ -52,6 +51,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   navigationBarAlignment: {
+    backgroundColor: '#fff8',
     bottom: 0,
   },
 })

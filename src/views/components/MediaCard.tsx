@@ -1,11 +1,11 @@
 import { Text, StyleSheet, Image, Pressable, View } from 'react-native'
-import { Media, MediaType } from '../../models/CollectionDTO';
+import { Media } from '../../models/CollectionDTO';
 import { HomeFeedViewModel } from '../screens/HomeFeed/HomeFeedViewModel';
 import { HomeFeedUiEvent } from '../screens/HomeFeed/HomeFeedUiEvent';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { HomeFeedNavigationProp } from '../../navigation/AppNavGraph';
 import Video from 'react-native-video';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { HomeFeedNavigationProp } from '../../navigation/NavigationProps';
 
 const MediaCard = (props: any) => {
     const navigator = useNavigation<HomeFeedNavigationProp>();
@@ -16,46 +16,39 @@ const MediaCard = (props: any) => {
 
     const isPlaybackIndex = props.params.playingIndex === props.params.item.index
 
-    useEffect(() => { 
-        if (media?.type === MediaType.Video) console.log(
-            "Loading state: ", playbackState, 
-            " for ", props.params.item.index, 
-            " isPlaybackIndex? ", isPlaybackIndex,
-        );
-    }, [playbackState, isPlaybackIndex])
-
-    // useEffect(() => { 
-    //     if (!isPlaybackIndex) setPlaybackState(0);
-    // }, [isPlaybackIndex])
-
     return (
         <Pressable onPress={ () => {
-            homeViewModel.uiEvent(HomeFeedUiEvent.NavigateToGallery(navigator));
+            homeViewModel.uiEvent(
+                HomeFeedUiEvent.NavigateToGallery(navigator, props.params.item)
+            );
         }}>
-            <View style={ [styles.cardRoot, { aspectRatio: (media?.width ?? 16) / (media?.height ?? 9)}] }>
-            {
-                isPlaybackIndex ? <Video 
-                    source={{ uri: (media?.video_files?.find((it) => it.quality === 'sd'))?.link || '' }}
-                    style={[styles.mediaItem, styles.mediaVideo]}
-                    resizeMode='cover'
-                    repeat={true}
-                    controls={false}
-                    paused={!isMediaFocused}
-                    onLoadStart={ () => setPlaybackState(1) }
-                    onReadyForDisplay={ () => setPlaybackState(2) }
-                    onLoad={ () => setPlaybackState(3) }
-                    onPlaybackStateChanged={ (state) => {
-                        setPlaybackState(state.isPlaying? 4 : 5) 
-                    }}
-                /> : <View></View>
-            }
-            {
-                (!(isPlaybackIndex && playbackState > 2)) ? <Image 
-                    src={ media?.src?.medium || media?.image } 
-                    style={[ styles.mediaItem, styles.mediaImage]}
-                    resizeMode='cover'
-                />: <View></View>
-            }
+            <View style={[
+                styles.cardRoot, 
+                { aspectRatio: (media?.width ?? 16) / (media?.height ?? 9)}
+            ]} >
+                {
+                    isPlaybackIndex ? <Video 
+                        source={{ uri: (media?.video_files?.find((it) => it.quality === 'sd'))?.link || '' }}
+                        style={[styles.mediaItem, styles.mediaVideo]}
+                        resizeMode='cover'
+                        repeat={true}
+                        controls={false}
+                        paused={!isMediaFocused}
+                        onLoadStart={ () => setPlaybackState(1) }
+                        onReadyForDisplay={ () => setPlaybackState(2) }
+                        onLoad={ () => setPlaybackState(3) }
+                        onPlaybackStateChanged={ (state) => {
+                            setPlaybackState(state.isPlaying? 4 : 5) 
+                        }}
+                    /> : <View />
+                }
+                {
+                    (!(isPlaybackIndex && playbackState > 2)) ? <Image 
+                        src={ media?.src?.medium || media?.image } 
+                        style={[ styles.mediaItem, styles.mediaImage]}
+                        resizeMode='cover'
+                    />: <View />
+                }
             </View>
             <Text style={styles.authorName}>{ (props.params.item.index) + ' - ' + (media?.photographer || media?.user?.name) + ' (' + media?.type +')'}</Text>
         </Pressable>

@@ -6,9 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MediaCard from '../../../components/MediaCard';
 import { HomeFeedViewModel } from '../HomeFeedViewModel';
 import { HomeFeedUiEvent } from '../HomeFeedUiEvent';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 const HomeFeedSuccessUi = (props: any) => {
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+
   var homeViewModel = props.params.viewModel as HomeFeedViewModel; 
 
   const [playingIndex, setPlayingIndex] = useState<number>(-1);
@@ -35,7 +38,7 @@ const HomeFeedSuccessUi = (props: any) => {
           horizontal={false}
           data={(props.params.data as Media[]) || []}
           keyExtractor={(item, index) => index.toString() + item.id.toString() }
-          contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+          contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}
           renderItem = { item => 
             <MediaCard params={{ item, homeViewModel, playingIndex }}/>
           }

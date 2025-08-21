@@ -26,20 +26,17 @@ async function dataProducer(
     subscriber.next(ResponseStates.loading(cachedData));
     console.log('MediaAPI.getCollection loading');
 
-    await MediaAPI.getAPI<CollectionDTO>(url)
+    MediaAPI.getAPI<CollectionDTO>(url)
         .then(data => {
             console.log('MediaAPI.getCollection', data);
             const response = ResponseStates.success(data, 200);
-            if (shouldCache) {
-                MediaCache.set(url, data);
-            }
+            if (shouldCache) { MediaCache.set(url, data); }
             subscriber.next(response);
-            subscriber.complete();
         })
         .catch(error => {
             console.log('MediaAPI.getCollection', error);
             const response = ResponseStates.failure(error.status || 500, error.code || "Unknown Error", cachedData);
             subscriber.next(response);
-            subscriber.complete();
-        });
+        })
+        .finally(() => subscriber.complete());
 }

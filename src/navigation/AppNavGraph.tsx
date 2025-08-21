@@ -1,36 +1,54 @@
-import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
-import HomeFeed from '../views/screens/HomeFeed/_layout';
-import VerticalPagerGallery from '../views/screens/MediaGallery/_layout';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeFeed, { HOME_FEED_SCREEN_NAME } from '../views/screens/HomeFeed/_layout';
+import VerticalPagerGallery, { MEDIA_GALLERY_SCREEN_NAME } from '../views/screens/MediaGallery/_layout';
+import { HomeFeedViewModel } from '../views/screens/HomeFeed/HomeFeedViewModel';
 
-// Import your screens (you'll need to create these)
-
-// Define the types for our route parameters
 export type RootStackParamList = {
     HomeFeed: any;
-    VerticalPageGallery: any;
+    VerticalPageGallery: {
+        homeViewModel: HomeFeedViewModel,
+        params: any,
+    };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-
-export type HomeFeedNavigationProp = NativeStackNavigationProp<RootStackParamList, 'HomeFeed'>;
-
 const AppNavGraph = () => {
     return (
         <Stack.Navigator
-            initialRouteName="HomeFeed"
+            initialRouteName={ HOME_FEED_SCREEN_NAME }
             screenOptions={{
                 headerShown: false,
                 animation: 'slide_from_right'
             }}
         >
             <Stack.Screen 
-                name="HomeFeed" 
-                component={HomeFeed} 
+                name={ HOME_FEED_SCREEN_NAME } 
+                component={HomeFeed}
+                options={{
+                    title: 'Home Feed',
+                    headerShown: true,
+                    headerTransparent: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: '#ffffff77',
+                    },
+                    headerBackButtonDisplayMode: 'minimal',
+                    orientation: 'portrait',
+                }}
             />
             <Stack.Screen 
-                name="VerticalPageGallery" 
+                name={ MEDIA_GALLERY_SCREEN_NAME } 
                 component={VerticalPagerGallery} 
+                options={{ 
+                    title: 'Gallery',
+                    headerShown: true,
+                    headerTitleAlign: 'left',
+                    headerStyle: {
+                        backgroundColor: '#ffffff77'
+                    },
+                    headerTransparent: true,
+                }}
             />
         </Stack.Navigator>
     );

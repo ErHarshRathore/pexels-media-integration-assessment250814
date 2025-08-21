@@ -5,6 +5,7 @@ import { fetchMedia } from "../../../services/sharing/DataRepository";
 import { HomeFeedUiState, HomeFeedUiStateType } from "./HomeFeedUiState";
 import { Observable, Subject, share } from "rxjs";
 import { Media } from "../../../models/CollectionDTO";
+import { MEDIA_GALLERY_SCREEN_NAME } from "../MediaGallery/_layout";
 
 export class HomeFeedViewModel implements MVIViewModel<
     HomeFeedUiEventType,
@@ -23,14 +24,17 @@ export class HomeFeedViewModel implements MVIViewModel<
         console.log("HomeFeedViewModel.uiEvent called with intent:", intent);
 
         switch (intent.type) {
+            case HomeFeedUiEventOptions.LOAD_MORE_MEDIA:
+                if(!this.fetchingMedia) this.fetchNextPage();
+                break;
             case HomeFeedUiEventOptions.ON_INITIALIZE_FEED: 
                 this.fetchNextPage(true);
                 break;
             case HomeFeedUiEventOptions.NAVIGATE_TO_GALLERY:
-                intent.navigator.navigate('VerticalPageGallery');
-                break;
-            case HomeFeedUiEventOptions.LOAD_MORE_MEDIA:
-                if(!this.fetchingMedia) this.fetchNextPage();
+                intent.navigator.navigate(
+                    MEDIA_GALLERY_SCREEN_NAME, 
+                    { homeViewModel: this, params: intent.params }
+                );
                 break;
         }
     }
