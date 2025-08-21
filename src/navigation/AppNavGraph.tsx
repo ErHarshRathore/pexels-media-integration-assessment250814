@@ -1,12 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeFeed, { HOME_FEED_SCREEN_NAME } from '../views/screens/HomeFeed/_layout';
 import VerticalPagerGallery, { MEDIA_GALLERY_SCREEN_NAME } from '../views/screens/MediaGallery/_layout';
-import { HomeFeedViewModel } from '../views/screens/HomeFeed/HomeFeedViewModel';
+import { Media } from '../models/CollectionDTO';
 
 export type RootStackParamList = {
     HomeFeed: any;
     VerticalPageGallery: {
-        homeViewModel: HomeFeedViewModel,
+        mediaCollection: Media[],
         params: any,
     };
 };

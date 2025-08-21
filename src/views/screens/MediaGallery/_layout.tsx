@@ -1,6 +1,5 @@
 import { View, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { HomeFeedViewModel } from '../HomeFeed/HomeFeedViewModel';
 import MediaGalleryItem from '../../components/MediaGalleryItem';
 import { Media } from '../../../models/CollectionDTO';
 import { FlashList } from '@shopify/flash-list';
@@ -11,12 +10,7 @@ export const MEDIA_GALLERY_SCREEN_NAME = 'VerticalPageGallery';
 
 const VerticalPagerGallery = () => {
     const navParams = useRoute().params as any;
-    // const navigator = useNavigation<GalleryNavigationProp>();
-
-    // const mediaCollection = ((route.params as any)?.mediaCollection || []) as Media[]
-    const homeViewModel = navParams.homeViewModel as HomeFeedViewModel
-
-
+    const mediaCollection = navParams.mediaCollection as Media[]
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
@@ -28,7 +22,7 @@ const VerticalPagerGallery = () => {
     return (
         <View style={styles.container}>
             <FlashList
-                data={ homeViewModel.mediaCollection as Media[] }
+                data={ mediaCollection }
                 style={styles.pagerView}
                 renderItem={ item => (
                     <MediaGalleryItem params={{item, currentIndex}} />
@@ -84,7 +78,6 @@ const styles = StyleSheet.create({
         right: 0,
     },
     pagerView: {
-        backgroundColor: '#0ff',
         position: 'absolute',
         top: 0,
         left: 0,

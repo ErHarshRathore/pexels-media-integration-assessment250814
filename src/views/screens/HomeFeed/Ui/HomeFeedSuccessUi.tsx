@@ -15,7 +15,7 @@ const HomeFeedSuccessUi = (props: any) => {
   var homeViewModel = props.params.viewModel as HomeFeedViewModel; 
 
   const [playingIndex, setPlayingIndex] = useState<number>(-1);
-  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 120 }; 
+  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 100 }; 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
     onChangedViewableItems(
       viewableItems, 
@@ -25,7 +25,7 @@ const HomeFeedSuccessUi = (props: any) => {
         console.log("Setting playing index to: ", i);
         setPlayingIndex(i) 
       }, 
-      (i) => { return i >= ((props.params.data as Media[]).length - 6) }
+      (i) => { return i >= ((props.params.data as Media[]).length - 3) }
     );
   })
   useEffect(() => {

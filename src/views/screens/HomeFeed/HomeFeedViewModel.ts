@@ -33,7 +33,7 @@ export class HomeFeedViewModel implements MVIViewModel<
             case HomeFeedUiEventOptions.NAVIGATE_TO_GALLERY:
                 intent.navigator.navigate(
                     MEDIA_GALLERY_SCREEN_NAME, 
-                    { homeViewModel: this, params: intent.params }
+                    { mediaCollection: this.mediaCollection, params: intent.params }
                 );
                 break;
         }

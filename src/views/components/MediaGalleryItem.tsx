@@ -6,8 +6,8 @@ import { Text } from '@react-navigation/elements';
 const windowSize = Dimensions.get('window');
 const MediaGalleryItem = (props: any) => {
     const media = props.params.item.item as (Media | null);
-
     const isPlaybackIndex = props.params.currentIndex === props.params.item.index
+    
     return (
         <View style={ [styles.root, { height: windowSize.height}] } >
             {
@@ -18,7 +18,6 @@ const MediaGalleryItem = (props: any) => {
                     resizeMode='contain'
                     repeat={false}
                     controls={true}
-                    renderLoader={true}
                     paused={!isPlaybackIndex}
                 /> : <Image 
                     src={ findHighestResolutionImage(media) } 
