@@ -1,11 +1,16 @@
-import { Text, StyleSheet, Image, Pressable, View } from 'react-native'
+import { Text, StyleSheet, Pressable, View } from 'react-native'
 import { Media } from '../../models/CollectionDTO';
 import { HomeFeedViewModel } from '../screens/HomeFeed/HomeFeedViewModel';
 import { HomeFeedUiEvent } from '../screens/HomeFeed/HomeFeedUiEvent';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Video from 'react-native-video';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HomeFeedNavigationProp } from '../../navigation/NavigationProps';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { IS_ANDROID } from '../../constants/DeviceInfo';
+
+const thumbnailDisapearingDelay = IS_ANDROID? 200 : 100;
+const commonAnimationDuration = 400;
 
 const MediaCard = (props: any) => {
     const navigator = useNavigation<HomeFeedNavigationProp>();
@@ -13,8 +18,21 @@ const MediaCard = (props: any) => {
     const media = props.params.item.item as (Media | null);
     const homeViewModel = props.params.homeViewModel as HomeFeedViewModel;
     const [playbackState, setPlaybackState] = useState(0);
-
     const isPlaybackIndex = props.params.playingIndex === props.params.item.index
+
+    useEffect(() => {
+        // On MediaItem changed, reset the states
+        setPlaybackState(0)
+     }, [media?.id, props.params.playingIndex])
+
+     useEffect(() => {
+        console.log(
+            "item: ", props.params.item.index,
+            " playbackI: ", props.params.playingIndex,
+            " playbackS: ", playbackState,            
+        )
+     }, [isPlaybackIndex, playbackState])
+
 
     return (
         <Pressable onPress={ () => {
@@ -27,32 +45,52 @@ const MediaCard = (props: any) => {
                 { aspectRatio: (media?.width ?? 16) / (media?.height ?? 9)}
             ]} >
                 {
-                    isPlaybackIndex ? <Video 
-                        source={{ uri: (media?.video_files?.find((it) => it.quality === 'sd'))?.link || '' }}
+                    isPlaybackIndex && <Animated.View 
                         style={[styles.mediaItem, styles.mediaVideo]}
-                        resizeMode='cover'
-                        repeat={true}
-                        controls={false}
-                        paused={!isMediaFocused}
-                        onLoadStart={ () => setPlaybackState(1) }
-                        onReadyForDisplay={ () => setPlaybackState(2) }
-                        onLoad={ () => setPlaybackState(3) }
-                        onPlaybackStateChanged={ (state) => {
-                            setPlaybackState(state.isPlaying? 4 : 5) 
-                        }}
-                    /> : <View />
+                        exiting={ FadeOut.duration(commonAnimationDuration) }
+                        entering={ FadeIn.delay(50).duration(0) }
+                        pointerEvents='none'
+                    >
+                        <Video 
+                            style={styles.mediaVideo}
+                            source={{ uri: getVideoPreviewUrl(media as Media) }}
+                            resizeMode='cover'
+                            repeat={true}
+                            controls={false}
+                            paused={!(isPlaybackIndex && isMediaFocused)}
+                            onLoadStart={ () => setPlaybackState(1) }
+                            onLoad={ () => setPlaybackState(IS_ANDROID? 4 : 2) }
+                            onReadyForDisplay={ () => setPlaybackState(3) }
+                            onPlaybackStateChanged={ (state) => setPlaybackState(state.isPlaying? 4 : 5) }
+                        />
+                    </Animated.View>
                 }
                 {
-                    (!(isPlaybackIndex && playbackState > 2)) ? <Image 
-                        src={ media?.src?.medium || media?.image } 
+                    (!isPlaybackIndex || playbackState < 3) && <Animated.Image 
+                        src={ media?.src?.medium || media?.image || media?.video_pictures?.[0]?.picture } 
                         style={[ styles.mediaItem, styles.mediaImage]}
                         resizeMode='cover'
-                    />: <View />
+                        exiting={ FadeOut.delay(thumbnailDisapearingDelay).duration(commonAnimationDuration) }
+                        entering={ FadeIn.duration(commonAnimationDuration) }
+                    />
                 }
             </View>
             <Text style={styles.authorName}>{ (props.params.item.index) + ' - ' + (media?.photographer || media?.user?.name) + ' (' + media?.type +')'}</Text>
         </Pressable>
     );
+}
+
+const getVideoPreviewUrl = (media: Media): string => {
+    var minSize = Infinity
+    var res = ''
+
+    media.video_files?.forEach( element => {
+        if (element.size < minSize) {
+            minSize = element.size
+            res = element.link || res
+        }
+    });
+    return res;
 }
 
 const styles = StyleSheet.create({
@@ -64,7 +102,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     mediaItem: {
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#d0d0d0',
         flex: 1,
         borderRadius: 12,
         overflow: 'hidden',
