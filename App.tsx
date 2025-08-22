@@ -1,45 +1,59 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavGraph from './src/navigation/AppNavGraph';
+import { enableScreens } from 'react-native-screens';
+import { StyleSheet, View } from 'react-native';
+import { IS_ANDROID } from './src/constants/DeviceInfo';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+// Enable screens for better navigation performance
+enableScreens();
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+const App = () => {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+    <SafeAreaProvider style={styles.appWindowContainer}>
+      <StatusBarOverlay />
+      <NavigationBarOverlay />
+      <NavigationContainer>
+        <AppNavGraph />
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+const StatusBarOverlay = () => {
+  return <View style={[
+    styles.systemBarOverlay, 
+    styles.statusBarAlignment,
+    { height: useSafeAreaInsets().top },
+  ]}/>
+}
 
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
+const NavigationBarOverlay = () => {
+  return <View style={[
+    styles.systemBarOverlay,
+    styles.navigationBarAlignment,
+    { height: useSafeAreaInsets().bottom },
+  ]}/>
 }
 
 const styles = StyleSheet.create({
-  container: {
+  appWindowContainer: {
     flex: 1,
+    backgroundColor: '#fff',
   },
-});
+  systemBarOverlay: { 
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: IS_ANDROID? '#fff' : 'transparent',
+  },
+  statusBarAlignment: {
+    top: 0,
+  },
+  navigationBarAlignment: {
+    bottom: 0,
+  },
+})
 
 export default App;
