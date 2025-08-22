@@ -14,10 +14,10 @@ const MediaGalleryItem = (props: any) => {
         console.log('player playback failed:', error);
         setRetryCount(prev => prev + 1);
 
-        if (retryCount < 2) { // MAX_RETRY_COUNT is 2, todo to make it a global const.
+        if (retryCount <= 2) { // MAX_RETRY_COUNT is 2, todo to make it a global const.
             setMediaUri({
                 imageUri: mediaUri?.imageUri || '',
-                videoUri: findHighestResolutionVideo(media, (retryCount < 1) ? 'hd' : 'sd')
+                videoUri: findHighestResolutionVideo(media, (retryCount === 1) ? 'hd' : 'sd')
             });
         }
     };
@@ -27,6 +27,7 @@ const MediaGalleryItem = (props: any) => {
             imageUri: findHighestResolutionImage(media),
             videoUri: findHighestResolutionVideo(media),
         })
+        setRetryCount(0);
     }, [media])
 
     return (
