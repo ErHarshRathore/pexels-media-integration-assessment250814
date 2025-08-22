@@ -2,7 +2,8 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavGraph from './src/navigation/AppNavGraph';
 import { enableScreens } from 'react-native-screens';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { IS_ANDROID } from './src/constants/DeviceInfo';
 
 // Enable screens for better navigation performance
 enableScreens();
@@ -10,7 +11,6 @@ enableScreens();
 const App = () => {
   return (
     <SafeAreaProvider style={styles.appWindowContainer}>
-      <StatusBar barStyle='dark-content'/>
       <StatusBarOverlay />
       <NavigationBarOverlay />
       <NavigationContainer>
@@ -46,12 +46,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1000,
+    backgroundColor: IS_ANDROID? '#fff' : 'transparent',
   },
   statusBarAlignment: {
     top: 0,
   },
   navigationBarAlignment: {
-    backgroundColor: '#fff8',
     bottom: 0,
   },
 })

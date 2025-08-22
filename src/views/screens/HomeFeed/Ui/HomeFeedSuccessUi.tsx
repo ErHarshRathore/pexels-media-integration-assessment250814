@@ -15,7 +15,7 @@ const HomeFeedSuccessUi = (props: any) => {
   var homeViewModel = props.params.viewModel as HomeFeedViewModel; 
 
   const [playingIndex, setPlayingIndex] = useState<number>(-1);
-  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 100 }; 
+  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 70 }; 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
     onChangedViewableItems(
       viewableItems, 
@@ -39,6 +39,7 @@ const HomeFeedSuccessUi = (props: any) => {
           data={(props.params.data as Media[]) || []}
           keyExtractor={(item, index) => index.toString() + item.id.toString() }
           contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}
+          getItemType={ (item) => item.type }
           renderItem = { item => 
             <MediaCard params={{ item, homeViewModel, playingIndex }}/>
           }

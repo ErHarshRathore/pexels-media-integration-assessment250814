@@ -1,27 +1,48 @@
-import { StyleSheet, Image, View, Dimensions } from 'react-native'
+import { StyleSheet, Image, View } from 'react-native'
 import { Media, MediaType } from '../../models/CollectionDTO';
 import Video from 'react-native-video';
 import { Text } from '@react-navigation/elements';
+import { useEffect, useState } from 'react';
 
 const MediaGalleryItem = (props: any) => {
-    const windowSize = Dimensions.get('window');
     const media = props.params.item.item as (Media | null);
+    const [mediaUri, setMediaUri] = useState<MediaUri>();
+    const [retryCount, setRetryCount] = useState(0);
     const isPlaybackIndex = props.params.currentIndex === props.params.item.index
 
+    const handleError = (error: any) => {
+        console.log('player playback failed:', error);
+        setRetryCount(prev => prev + 1);
+
+        if (retryCount < 2) { // MAX_RETRY_COUNT is 2, todo to make it a global const.
+            setMediaUri({
+                imageUri: mediaUri?.imageUri || '',
+                videoUri: findHighestResolutionVideo(media, (retryCount < 1) ? 'hd' : 'sd')
+            });
+        }
+    };
+
+    useEffect(() => {
+        setMediaUri({
+            imageUri: findHighestResolutionImage(media),
+            videoUri: findHighestResolutionVideo(media),
+        })
+    }, [media])
+
     return (
-        <View style={ [styles.root, { height: windowSize.height}] } >
+        <View style={ [styles.root, {height: props.params.pagerHeight}]} >
             {
                 (media?.type === MediaType.Video) ? <Video 
-                    source={{ uri: findHighestResolutionVideo(media) }}
+                    source={{ uri: mediaUri?.videoUri }}
                     poster={ media?.image || media?.video_pictures?.[0]?.picture }
                     style={[styles.mediaItem]}
                     resizeMode='contain'
                     repeat={false}
                     controls={true}
-                    onError={ (error) => console.log(error) }
+                    onError={ (error) => handleError(error) }
                     paused={!isPlaybackIndex}
                 /> : <Image 
-                    src={ findHighestResolutionImage(media) } 
+                    src={ mediaUri?.imageUri } 
                     alt={ media?.alt }
                     style={[ styles.mediaItem]}
                     resizeMode='contain'
@@ -32,14 +53,16 @@ const MediaGalleryItem = (props: any) => {
     );
 }
 
-function findHighestResolutionVideo(media: Media): string {
+function findHighestResolutionVideo(media: Media | null, quality: string = `uhd`): string {
+    console.log("player retry for quality - ", quality)
     var currentMax = 0;
     var res = '';
 
-    media.video_files?.forEach( element => {
+    media?.video_files?.forEach( element => {
         if (element.size > currentMax) {
             currentMax = element.size
-            res = element.link || res
+            if (res && element.quality === quality) res = element.link || res
+            else res = element.link
         }
     });
     return res;
@@ -59,10 +82,14 @@ function findHighestResolutionImage(media: Media | null): string {
     return res;
 }
 
+type MediaUri = {
+    imageUri: string;
+    videoUri: string;
+}
+
 const styles = StyleSheet.create({
     root: {
         width: '100%',
-        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'black',
@@ -75,7 +102,7 @@ const styles = StyleSheet.create({
         position:'absolute',
         right: 10,
         bottom: 100,
-        backgroundColor: '#0f0',
+        backgroundColor: '#0d0',
         padding: 2,
     }
 })

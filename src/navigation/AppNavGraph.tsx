@@ -18,7 +18,6 @@ const AppNavGraph = () => {
         <Stack.Navigator
             initialRouteName={ HOME_FEED_SCREEN_NAME }
             screenOptions={{
-                headerShown: false,
                 animation: 'slide_from_right'
             }}
         >
@@ -31,7 +30,7 @@ const AppNavGraph = () => {
                     headerTransparent: true,
                     headerTitleAlign: 'center',
                     headerStyle: {
-                        backgroundColor: '#ffffff77',
+                        backgroundColor: '#fff8',
                     },
                     headerBackButtonDisplayMode: 'minimal',
                     orientation: 'portrait',
@@ -42,10 +41,10 @@ const AppNavGraph = () => {
                 component={VerticalPagerGallery} 
                 options={{ 
                     title: 'Gallery',
-                    headerShown: true,
-                    headerTitleAlign: 'left',
+                    headerShown:false,
+                    headerBackVisible:false,
                     headerStyle: {
-                        backgroundColor: '#ffffff77'
+                        backgroundColor: '#fff8'
                     },
                     headerTransparent: true,
                 }}

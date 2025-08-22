@@ -18,12 +18,17 @@ const MediaCard = (props: any) => {
     const media = props.params.item.item as (Media | null);
     const homeViewModel = props.params.homeViewModel as HomeFeedViewModel;
     const [playbackState, setPlaybackState] = useState(0);
+    const [mediaUri, setMediaUri] = useState<string[]>([]);
     const isPlaybackIndex = props.params.playingIndex === props.params.item.index
 
     useEffect(() => {
         // On MediaItem changed, reset the states
         setPlaybackState(0)
-     }, [media?.id, props.params.playingIndex])
+        setMediaUri([
+            media?.src?.medium || media?.image || media?.video_pictures?.[0]?.picture || '',
+            getVideoPreviewUrl(media as Media),
+        ])
+     }, [media, props.params.playingIndex])
 
     return (
         <Pressable onPress={ () => {
@@ -44,7 +49,7 @@ const MediaCard = (props: any) => {
                     >
                         <Video 
                             style={styles.mediaVideo}
-                            source={{ uri: getVideoPreviewUrl(media as Media) }}
+                            source={{ uri: mediaUri[1] }}
                             resizeMode='cover'
                             repeat={true}
                             controls={false}
@@ -58,7 +63,7 @@ const MediaCard = (props: any) => {
                 }
                 {
                     (!isPlaybackIndex || playbackState < 3) && <Animated.Image 
-                        src={ media?.src?.medium || media?.image || media?.video_pictures?.[0]?.picture } 
+                        src={ mediaUri[0] } 
                         style={[ styles.mediaItem, styles.mediaImage]}
                         resizeMode='cover'
                         exiting={ FadeOut.delay(thumbnailDisapearingDelay).duration(commonAnimationDuration) }
