@@ -70,6 +70,9 @@ const MediaCard = (props: any) => {
                         entering={ FadeIn.duration(commonAnimationDuration) }
                     />
                 }
+                {
+                    (playbackState === 1) && <Text style={styles.loadingIndicator}> Loading... </Text>
+                }
             </View>
             <Text style={styles.authorName}>{ (props.params.item.index) + ' - ' + (media?.photographer || media?.user?.name) + ' (' + media?.type +')'}</Text>
         </Pressable>
@@ -118,6 +121,16 @@ const styles = StyleSheet.create({
         marginVertical: 6,
         color: '#333'
     },
+    loadingIndicator: {
+        zIndex: 120,
+        position: 'absolute',
+        bottom: 8,
+        right: 8,
+        fontStyle: 'italic',
+        fontSize: 14,
+        color: `#fff`,
+        backgroundColor: `#0008`,
+    }
 })
 
 export default MediaCard

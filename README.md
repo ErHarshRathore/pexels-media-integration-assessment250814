@@ -7,7 +7,7 @@ This [**React Native**](https://reactnative.dev) project, bootstrapped using [`@
 
 ### dependancies 
 ```json
-dependencies {
+dependencies: {
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native/new-app-screen": "0.81.0",
     "@react-navigation/elements": "^2.6.3",

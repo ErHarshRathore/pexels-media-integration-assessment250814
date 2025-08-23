@@ -13,7 +13,6 @@ export const MEDIA_GALLERY_SCREEN_NAME = 'VerticalPageGallery';
 
 const VerticalPagerGallery = () => {
     const windowSize = Dimensions.get('window')
-    const isLandscape = windowSize.width > windowSize.height;
     const navParams = useRoute().params as any;
     const navigator = useNavigation<GalleryNavigationProp>()
     const insets = useSafeAreaInsets();
@@ -21,8 +20,8 @@ const VerticalPagerGallery = () => {
     const pagerRef = useRef<FlashListRef<Media>>(null);
 
     const mediaCollection = navParams.mediaCollection as Media[]
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [pagerHeight, setPagerHeight] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(navParams.params?.index);
+    const [pagerHeight, setPagerHeight] = useState(windowSize.height);
 
     const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
         if (viewableItems.length > 0) {
@@ -31,13 +30,12 @@ const VerticalPagerGallery = () => {
     });
 
     useEffect(() => {
-        const requestLayout = async () => {
-            await delay(100);
+        const requestLayout = () => {
             pagerRef.current?.clearLayoutCacheOnUpdate();
-            pagerRef.current?.scrollToIndex({ animated: false, index: currentIndex });
+            pagerRef.current?.scrollToIndex({ animated: true, index: currentIndex });
         }
-        requestLayout();
-    }, [isLandscape])
+        setTimeout(requestLayout, 100)
+    }, [windowSize.width > windowSize.height, pagerHeight])
 
     return (
         <View style={[styles.container]}>
@@ -53,7 +51,7 @@ const VerticalPagerGallery = () => {
                 pagingEnabled={ true } 
                 decelerationRate='fast'
                 showsVerticalScrollIndicator={false}
-                getItemType={ (item) => item.type }
+                // getItemType={ (item) => item.type }
                 onLayout={(event) => setPagerHeight(event.nativeEvent.layout.height) }
                 onViewableItemsChanged={onViewableItemsChanged.current}
                 viewabilityConfig={{ viewAreaCoveragePercentThreshold: 70 }}

@@ -1,8 +1,8 @@
 import { StyleSheet, Image, View } from 'react-native'
 import { Media, MediaType } from '../../models/CollectionDTO';
-import Video from 'react-native-video';
+import Video, { VideoRef } from 'react-native-video';
 import { Text } from '@react-navigation/elements';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const MediaGalleryItem = (props: any) => {
     const media = props.params.item.item as (Media | null);
@@ -12,14 +12,14 @@ const MediaGalleryItem = (props: any) => {
 
     const handleError = (error: any) => {
         console.log('player playback failed:', error);
-        setRetryCount(prev => prev + 1);
 
-        if (retryCount <= 2) { // MAX_RETRY_COUNT is 2, todo to make it a global const.
+        if (retryCount < 2) { // MAX_RETRY_COUNT is 2, todo to make it a global const.
             setMediaUri({
                 imageUri: mediaUri?.imageUri || '',
-                videoUri: findHighestResolutionVideo(media, (retryCount === 1) ? 'hd' : 'sd')
+                videoUri: findHighestResolutionVideo(media, (retryCount === 0) ? 'hd' : 'sd')
             });
         }
+        setRetryCount(prev => prev + 1);
     };
 
     useEffect(() => {
@@ -35,8 +35,9 @@ const MediaGalleryItem = (props: any) => {
             {
                 (media?.type === MediaType.Video) ? <Video 
                     source={{ uri: mediaUri?.videoUri }}
-                    poster={ media?.image || media?.video_pictures?.[0]?.picture }
+                    // poster={ media?.image || media?.video_pictures?.[0]?.picture }
                     style={[styles.mediaItem]}
+                    renderLoader={true}
                     resizeMode='contain'
                     repeat={false}
                     controls={true}
@@ -62,7 +63,7 @@ function findHighestResolutionVideo(media: Media | null, quality: string = `uhd`
     media?.video_files?.forEach( element => {
         if (element.size > currentMax) {
             currentMax = element.size
-            if (res && element.quality === quality) res = element.link || res
+            if (res) res = (element.quality === quality) ? element.link || res : res
             else res = element.link
         }
     });

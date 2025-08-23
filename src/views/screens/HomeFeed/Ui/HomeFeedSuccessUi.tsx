@@ -12,10 +12,10 @@ const HomeFeedSuccessUi = (props: any) => {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
 
-  var homeViewModel = props.params.viewModel as HomeFeedViewModel; 
+  const homeViewModel = props.params.viewModel as HomeFeedViewModel;
 
   const [playingIndex, setPlayingIndex] = useState<number>(-1);
-  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 70 }; 
+  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 100 }; 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
     onChangedViewableItems(
       viewableItems, 
@@ -25,7 +25,6 @@ const HomeFeedSuccessUi = (props: any) => {
         console.log("Setting playing index to: ", i);
         setPlayingIndex(i) 
       }, 
-      (i) => { return i >= ((props.params.data as Media[]).length - 3) }
     );
   })
   useEffect(() => {
@@ -39,7 +38,7 @@ const HomeFeedSuccessUi = (props: any) => {
           data={(props.params.data as Media[]) || []}
           keyExtractor={(item, index) => index.toString() + item.id.toString() }
           contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}
-          getItemType={ (item) => item.type }
+          // getItemType={ (item) => item.type }
           renderItem = { item => 
             <MediaCard params={{ item, homeViewModel, playingIndex }}/>
           }
@@ -57,28 +56,14 @@ const onChangedViewableItems = (
   playingIndex: number,
   homeViewModel: HomeFeedViewModel,
   setPlayingIndex: (index: number) => void,
-  reachedLoadMoreThreshold: (index: number) => boolean,
 ) => {
   if (viewableItems.length > 0) {
-    if (reachedLoadMoreThreshold(
-      (viewableItems[viewableItems.length - 1].index as number)
-    )) homeViewModel.uiEvent(HomeFeedUiEvent.LoadMoreMedia());
+    if (
+      (viewableItems[viewableItems.length - 1].index as number) > (homeViewModel.mediaCollection.length-4)
+    ) homeViewModel.uiEvent(HomeFeedUiEvent.LoadMoreMedia());
 
-    let firstItem = viewableItems.find(item => item.item.type === MediaType.Video);
-    firstItem = firstItem || null;
-    console.log("first video: - ", firstItem, " visible items - ", viewableItems);
-  
-    switch (true) {
-        case firstItem !== null:
-          setPlayingIndex(firstItem.index as number);
-          break;
-        case (viewableItems[0].index as number) > playingIndex:
-          setPlayingIndex(-1);
-          break;
-        case (viewableItems[viewableItems.length - 1].index as number) < playingIndex:
-          setPlayingIndex(-1);
-          break;
-    }
+    var firstItem = viewableItems.find(item => item.item.type === MediaType.Video);
+    setPlayingIndex(firstItem?.isViewable? firstItem.index as number : -1);
   }
 }
 

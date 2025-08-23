@@ -54,7 +54,7 @@ export class HomeFeedViewModel implements MVIViewModel<
                 switch (response.state) {
                     case ResponseCategoryOptions.LOADING:
                         if (response.cachedData) {
-                            this.mediaCollection = this.mediaCollection.concat(response.cachedData.media);
+                            this.mediaCollection = response.cachedData.media;
                             this._sideEffectFlow.next(HomeFeedUiState.Success(this.mediaCollection.length));
                         } else {
                             this._sideEffectFlow.next(HomeFeedUiState.Loading());
@@ -62,7 +62,9 @@ export class HomeFeedViewModel implements MVIViewModel<
                         break;
                     case ResponseCategoryOptions.SUCCESS:
                         if ((response.data?.media?.length || 0) > 0) {
-                            this.mediaCollection = this.mediaCollection.concat(response.data.media);
+                            if (this.nextPageUrl) this.mediaCollection = this.mediaCollection.concat(response.data.media);
+                            else this.mediaCollection = response.data.media;
+
                             this._sideEffectFlow.next(HomeFeedUiState.Success(this.mediaCollection.length));
                         } else {
                             this._sideEffectFlow.next(HomeFeedUiState.Error("No media found"));
